@@ -1,0 +1,43 @@
+.input-control-1 {
+    background: linear-gradient(
+    90deg,
+    rgb(247, 221, 149) 0%,
+    rgb(245, 237, 134) 100%
+  );
+        margin-bottom: 15px;
+        position: relative;
+        left: 50px;
+        width: 60%;
+          height: 150px;
+          margin: 0 auto;
+          margin-top: 50px;
+          border: 2px solid lightslategrey;
+          position: absolute;
+          left: 550px;
+          top: -50px;
+        padding: 50px;
+    }
+
+    .input-control {
+        background: linear-gradient(
+    90deg,
+    rgb(247, 221, 149) 0%,
+    rgb(245, 237, 134) 100%
+  );
+        margin-bottom: 15px;
+        position: relative;
+        left: 50px;
+        width: 13%;
+          height: 150px;
+          margin: 0 auto;
+          margin-top: 50px;
+          border: 2px solid lightslategrey;
+          position: absolute;
+          left: 350px;
+        padding: 50px;
+        }
+.submit{
+    position: relative;
+    left:-200px;
+    top:200px;
+}
