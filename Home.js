@@ -4,6 +4,21 @@ class Home extends Component {
   render() {
     return (
       <div>
+      <h1 className="game-title">
+    <span className="small">Connect</span>
+    <span className="big">Four</span>
+    <div class="circles">
+  <div class="circle red-sm"></div>
+  <div class="circle yellow-sm"></div>
+  <div class="circle red-sm"></div>
+  <div class="circle yellow-sm"></div>
+  <div class="circle red-sm"></div>
+  <div class="circle yellow-sm"></div>
+  <div class="circle red-sm"></div>
+  <div class="circle yellow-sm"></div>
+</div>
+  
+    </h1><br></br><br></br><br></br><br></br>
         <h2><strong>Instructions:</strong></h2>
         <p><ol>
             <li>To win Connect Four, all you have to do is connect four of your colored checker pieces in a row, much the same as tic tac toe. This can be done horizontally, vertically or diagonally.</li>
@@ -13,6 +28,7 @@ class Home extends Component {
             <li>The bottom of the vertical game board has a switch that you slide to make the pieces drop out of the board. This is a great opportunity to put the box underneath the game board to collect all of checker pieces together.</li>
             </ol></p>
       </div>
+      
     );
   }
 }
