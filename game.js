@@ -1,234 +1,128 @@
 import React, { Component } from 'react';
-import './App1.css';
-import { TiArrowDownOutline } from "react-icons/ti";
-class Container extends Component {
+import logo from './logo.svg';
+import './App.css';
+
+class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      board: this.createBoard(),
-      playerOneTurn: true,
-      lastColClicked: null,
-      gameOver: false,
-      reset: false
-    };
-
-    this.handleClick = this.handleClick.bind(this);
-    this.updateBoard = this.updateBoard.bind(this);
-    this.checkScore = this.checkScore.bind(this);
-    this.arrows = this.arrows.bind(this);
-    this.handleReset = this.handleReset.bind(this);
-    this.resetState = this.resetState.bind(this);
-  }
-
-  createBoard() {
-    return Array(6).fill().map(arr => Array(7).fill(null));
     
-  }
-
-  updateBoard(prevState, colIndex) {
-    const board = prevState.board.slice();
-    const row = board.slice().reverse().filter(row => row[colIndex] === null)[0];
-    const rowIndex = board.indexOf(row);
-    board[rowIndex][colIndex] = prevState.playerOneTurn === true ? 'playerone' : 'playertwo';
-    return board;
-  }
-
-  checkScore(board, playerOneTurn) {
-    const player = playerOneTurn  ? 'playerone' : 'playertwo';
-
-    for (let c=0; c < (board[0].length - 3); c++) {
-      for (let r=0; r < board.length; r++) {
-        if (board[r][c] === player && board[r][c+1] === player && board[r][c+2] === player && board[r][c+3] === player) {
-          return `${player} wins across!!!`;
-        }
-      }
-    }
-
-    for (let c=0; c < board[0].length; c++) {
-      for (let r=0; r < (board.length - 3); r++) {
-        if (board[r][c] === player && board[r+1][c] === player && board[r+2][c] === player && board[r+3][c] === player) {
-          return `${player} wins vertically!!!`;
-        }
-      }
-    }  
-
-    for (let c=0; c < (board[0].length - 3); c++) {
-      for (let r=0; r < (board.length - 3); r++) { 
-        if (board[r][c] === player && board[r+1][c+1] === player && board[r+2][c+2] === player && board[r+3][c+3] === player) {
-          return `${player} wins diagonally!!!`;
-        }
-      }
-    }
-
-    for (let c=0; c < (board[0].length - 3); c++) {
-      for (let r=3; r < board.length; r++) {
-        if (board[r][c] === player && board[r-1][c+1] === player && board[r-2][c+2] === player && board[r-3][c+3] === player) {
-          return `${player} wins diagonally!!!`;
-        }
-      }
-    }  
-
-    return false;
-  }
-
-  handleClick(colIndex) {
-    this.setState(prevState => {
-      const board = this.updateBoard(prevState, colIndex);
-
-      const gameOver = this.checkScore(board, prevState.playerOneTurn);
-
-      return {
-        board,
-        playerOneTurn: !this.state.playerOneTurn,
-        lastColClicked: colIndex,
-        gameOver
-      }
-    });
-  }
-
-  arrows() {
-    return Array(7).fill().map((_, i) => {
-      const colFull = !this.state.board.map((row) => row[i]).some(item => item === null);
-
-      return <Arrow 
-              key={i} 
-              colIndex={i} 
-              handleClick={this.handleClick} 
-              gameOver={this.state.gameOver}
-              colFull={colFull}
-              reset={this.state.reset}
-             />
-    })
+    this.state = {
+      player1: 1,
+      player2: 2,
+      currentPlayer: null,
+      board: [],
+      gameOver: false,
+      message: ''
+    };
+    
+    // Bind play function to App component
+    this.play = this.play.bind(this);
   }
   
-  resetState() {
+  // Starts new game
+  initBoard() {
+    // Create a blank 6x7 matrix
+    let board = [];
+    for (let r = 0; r < 6; r++) {
+      let row = [];
+      for (let c = 0; c < 7; c++) { row.push(null) }
+      board.push(row);
+    }
+    
     this.setState({
-      board: this.createBoard(),
-      playerOneTurn: true,
-      lastColClicked: null,
+      board,
+      currentPlayer: this.state.player1,
       gameOver: false,
-      reset: false
+      message: ''
     });
   }
-
-  handleReset() {
-    this.setState({reset: true});
-    setTimeout(this.resetState, 1400);
+  
+  togglePlayer() {
+    return (this.state.currentPlayer === this.state.player1) ? this.state.player2 : this.state.player1;
   }
+  
+  play(c) {
+    if (!this.state.gameOver) {
+      // Place piece on board
+      let board = this.state.board;
+      for (let r = 5; r >= 0; r--) {
+        if (!board[r][c]) {
+          board[r][c] = this.state.currentPlayer;
+          break;
+        }
+      }
 
+      // Check status of board
+      let result = this.checkAll(board);
+      if (result) {
+        this.setState({ board });
+      } else {
+        this.setState({ board, currentPlayer: this.togglePlayer() });
+      }
+    
+    }
+  }
+    checkDraw(board) {
+    for (let r = 0; r < 6; r++) {
+      for (let c = 0; c < 7; c++) {
+        if (board[r][c] === null) {
+          return null;
+        }
+      }
+    }
+    return 'draw';    
+  }
+  
+  checkAll(board) {
+    return this.checkDraw(board);
+  }
+  
+  componentWillMount() {
+    this.initBoard();
+  }
+  
   render() {
     return (
-      <div>
-        <Header playerOneTurn={this.state.playerOneTurn} gameOver={this.state.gameOver} handleReset={this.handleReset}/>
-        <div className="container">
-          <Row style={{height: '20px', marginBottom: '40px', marginLeft: '20px'}}>
-            {this.arrows()}
-          </Row>
-          <Board {...this.state} handleReset={this.handleReset} />
-        </div>
+      <div>       
+        <table>
+          <thead>
+          </thead>
+          <tbody>
+            {this.state.board.map((row, i) => (<Row key={i} row={row} play={this.play} />))}
+          </tbody>
+        </table>
+        
+        <p className="message">{this.state.message}</p>
       </div>
     );
   }
 }
 
-const Header = ({playerOneTurn, gameOver, handleReset}) => {
-  return(
-    <div>
-      {!gameOver ? (
-        <div className="header">
-          <h1 className={playerOneTurn ? 'player-change' : 'hide-player'} >Player <span className="red">One</span> Go!</h1>
-          <h1 className={!playerOneTurn ? 'player-change' : 'hide-player'}>Player <span className="black">Two</span> Go!</h1>
-        </div>
-      ) : (
-        <h1 className="game-over">{gameOver.split('player').join('player ')}</h1>
-      )}
-    </div>
-  );
-}
-
-const Board  = ({board, reset, handleReset}) => {
-  const rows = (_, i) => {
-    return (
-      <Row key={i}>
-        {rowOutput(spaces(i), 7)}
-      </Row>
-    );
-  }
-
-  const spaces = (rowIndex) => {
-    return (_, i) => {
-      return <Space key={i} player={board[rowIndex][i]} reset={reset} />;
-    };
-  }
-
-  const rowOutput = (row, num) => {
-    return Array(num).fill().map(row)
-  }
-
+// Row component
+const Row = ({ row, play }) => {
   return (
-    <div className="board-holder">
-      <div className="board">
-        {rowOutput(rows, 6)}
+    <tr>
+      {row.map((cell, i) => <Cell key={i} value={cell} columnIndex={i} play={play} />)}
+    </tr>
+  );
+};
+
+const Cell = ({ value, columnIndex, play }) => {
+  let color = 'white';
+  if (value === 1) {
+    color = 'red';
+  } else if (value === 2) {
+    color = 'yellow';
+  }
+    
+  return (
+    <td>
+      <div className="cell" onClick={() => {play(columnIndex)}}>
+        <div className={color}></div>
       </div>
-      <Reset handleReset={handleReset} lever={true} />
-    </div>
+    </td>
   );
-}
+};
 
-const Space = ({player, reset}) => {
-  const background = () => {
-    const style = {}
-    style.background = player === 'playerone' ? 'red' : 'Yellow';
-
-    console.log(reset);
-    if (reset) {
-      style.animation = 'clearboard 1.5s linear';
-    }
-    return style;
-  }
-
-  return (
-    <div className="space">
-      { player !== null &&
-        <div className="chip player-drop" style={background()} ></div>
-      }
-    </div>
-  );
-}
-
-const Arrow = ({colIndex, handleClick, gameOver, colFull, reset}) => {
-  function sendKey() {
-    return handleClick(colIndex);
-  }
-
-  function columnFull() {
-    return colFull ? {visibility: 'hidden'} : {};
-  }
-
-  if (!gameOver && !reset) {
-    return<TiArrowDownOutline className="fa fa-arrow-circle-down arrow" style={columnFull()} onClick={sendKey}/>
-  } else {
-    return null;
-  }
-}
-
-const Reset = ({handleReset}) => {
-  return (
-    <div className="button"  onClick={handleReset}>Reset</div>
-  );
-}
-
-const Row = (props) => {
-  return (
-    <div className="row" style={props.style}>
-      {props.children}
-    </div>
-  );
-}
-
-export default Container;
-
-
-
-
-
+ 
+export default App;
